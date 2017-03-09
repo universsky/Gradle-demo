@@ -57,9 +57,9 @@ public class PlatformApi {
 		params.put("enuu", "10041166");
 		params.put("pageNumber", "1");
 		params.put("pageSize", "10");
-//		sendHttp(url.list_vacation, params, "请假列表", METHOD_GET);
-//		sendHttp(url.list_feePlease, params, "出差列表", METHOD_GET);
-//		sendHttp(url.list_workOvertime, params, "加班列表", METHOD_GET);
+//		OkhttpUtils.sendHttp(url.list_vacation, params, cookies ,"请假列表", METHOD_GET);
+//		OkhttpUtils.sendHttp(url.list_feePlease, params, cookies ,"出差列表", METHOD_GET);
+//		OkhttpUtils.sendHttp(url.list_workOvertime, params,cookies , "加班列表", METHOD_GET);
 
 		saveData();
 	}
@@ -104,7 +104,7 @@ public class PlatformApi {
 		params.put("formStore", formStore);
 		params.put("gridStore", gridStore);
 		
-		sendHttp(url.save_feePlease, params, "出差单保存：", METHOD_POST);
+		OkhttpUtils.sendHttp(url.save_feePlease, params,cookies ,"出差单保存：", METHOD_POST);
 	}
 
 	
@@ -170,110 +170,7 @@ public class PlatformApi {
 	}
 
 	
-	/**
-	 * Arison
-	 * post请求回调
-	 * @param url
-	 * @param params
-	 * @param testName
-	 */
-	public static void sendHttp(String url, Map<String, Object> params,String tag,String method){
-		if ("get".equals(method)) {
-			sendGetHttp(url, params, tag);
-		}
-		if("post".equals(method)){
-			sendPostHttp(url,params,tag);
-		}
-		
-	}
 	
-	
-	/** 
-	 * post http
-	 * @param url
-	 * @param params
-	 * @param tag
-	 */
-	public static void sendPostHttp(String url,Map<String,Object> params,String tag){
-		Builder paramBuilder = new FormBody.Builder();
-		if (!params.isEmpty()) {
-		Iterator<Map.Entry<String, Object>> entries=    params.entrySet().iterator();
-		while (entries.hasNext()) {  
-		    Map.Entry<String, Object> entry = entries.next();  
-		    paramBuilder.add(String.valueOf(entry.getKey()),  String.valueOf(entry.getValue()));
-		}  
-		OkhttpUtils.println(tag+":"+url);
-		RequestBody formBody=paramBuilder.build();
-		Request request = new Request.Builder()
-				.url(url)
-				.addHeader("content-type", "text/html;charset:utf-8")
-				.addHeader("Cookie", cookies)
-				.post(formBody)
-				.build();
-		OkhttpUtils.client.newCall(request).enqueue(new Callback() {
-
-			@Override
-			public void onResponse(Call call, Response response) throws IOException {
-				String requestJson = OkhttpUtils.getResponseString(response);
-				OkhttpUtils.println(tag + ":" + requestJson);
-			}
-
-			@Override
-			public void onFailure(Call call, IOException e) {
-				OkhttpUtils.onFailurePrintln(e);
-			}
-		});
-		
-		}
-
-	}
-	
-	
-	/** 
-	 * get http 
-	 * @param url
-	 * @param tag
-	 */
-	public static void sendGetHttp(String url,Map<String,Object> params,String tag){
-		 StringBuilder buf = new StringBuilder(url);
-		if (!params.isEmpty()) { 
-			 
-	            if (url.indexOf("?") == -1)
-	                buf.append("?");
-	            else if (!url.endsWith("&"))
-	                buf.append("&");
-			Iterator<Map.Entry<String, Object>> entries=    params.entrySet().iterator();
-			while (entries.hasNext()) {  
-			    Map.Entry<String, Object> entry = entries.next();  
-			    buf.append(String.valueOf(entry.getKey()))
-                .append("=")
-                .append(String.valueOf(entry.getValue()))
-                .append("&");
-			}  
-			  buf.deleteCharAt(buf.length() - 1);
-		}
-		
-		Request request = new Request.Builder()
-				.url(buf.toString())
-				.addHeader("content-type", "text/html;charset:utf-8")
-				.addHeader("Cookie",cookies)
-				.build();
-		OkhttpUtils.println(tag+":"+buf.toString());
-		OkhttpUtils.client.newCall(request).enqueue(new Callback() {
-
-			@Override
-			public void onResponse(Call call, Response response) throws IOException {
-				String requestJson = OkhttpUtils.getResponseString(response);
-				OkhttpUtils.println(tag + ":" + requestJson);
-			}
-
-			@Override
-			public void onFailure(Call call, IOException e) {
-				OkhttpUtils.onFailurePrintln(e);
-			}
-		});
-		
-	}
 	
 	/**
 	 * 循环任务
